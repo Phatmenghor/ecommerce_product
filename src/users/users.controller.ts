@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Body,
   Controller,
@@ -29,6 +30,8 @@ export class UsersController {
       if (!user) {
         throw new NotFoundException(`User with email ${email} not found.`);
       }
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
       return user;
     } catch (error) {
       return handleError(error);
@@ -62,7 +65,9 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
   ) {
     try {
-      return await this.usersService.update(id, updateUserDto);
+      const userInfo = await this.usersService.update(id, updateUserDto);
+      const { password, ...userWithoutPassword } = userInfo;
+      return userWithoutPassword;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);

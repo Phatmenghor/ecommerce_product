@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcryptjs';
@@ -34,37 +34,41 @@ export class AuthService {
     return newUser;
   }
 
-  // async checkEmail(email: string): Promise<boolean> {
-  //   const user = await this.prisma.user.findUnique({ where: { email } });
-  //   return !!user;
-  // }
+  async checkEmail(email: string): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({ where: { email } });
 
-  // async updatePassword(
-  //   email: string,
-  //   newPassword: string,
-  // ): Promise<{ accessToken: string; userInfo: Partial<User> }> {
-  //   const user = await this.prisma.user.findUnique({ where: { email } });
+    console.log('### ====user', user);
+    return !!user;
+  }
 
-  //   if (!user) {
-  //     throw new BadRequestException('User not found');
-  //   }
+  async updatePassword(
+    email: string,
+    newPassword: string,
+  ): Promise<{ accessToken: string; userInfo: Partial<User> }> {
+    const user = await this.prisma.user.findUnique({ where: { email } });
 
-  //   const salt = await bcrypt.genSalt();
-  //   const hashedPassword = await bcrypt.hash(newPassword, salt); // Hash the new password with salt
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
 
-  //   // Update user's password in the database
-  //   await this.prisma.user.update({
-  //     where: { id: user.id },
-  //     data: {
-  //       password: hashedPassword,
-  //     },
-  //   });
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(newPassword, salt); // Hash the new password with salt
 
-  //   const accessToken = this.jwtService.sign({
-  //     id: user.id,
-  //     email: user.email,
-  //   });
+    // Update user's password in the database
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+      },
+    });
 
-  //   return { accessToken, userInfo: user };
-  // }
+    const accessToken = this.jwtService.sign({
+      id: user.id,
+      email: user.email,
+    });
+
+    const { password, ...userWithoutPassword } = user;
+
+    return { accessToken, userInfo: userWithoutPassword };
+  }
 }

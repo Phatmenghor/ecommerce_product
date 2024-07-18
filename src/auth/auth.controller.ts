@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Request,
   UnauthorizedException,
   UseGuards,
@@ -56,18 +57,18 @@ export class AuthController {
     return user;
   }
 
-  // @Post('forgot-password')
-  // async checkEmail(@Body('email') email: string): Promise<{ exists: boolean }> {
-  //   const exists = await this.authService.checkEmail(email);
-  //   return { exists };
-  // }
+  @Post('forgot-password')
+  async checkEmail(@Body('email') email: string): Promise<{ exists: boolean }> {
+    const exists = await this.authService.checkEmail(email);
+    return { exists };
+  }
 
-  // @Put('reset-password')
-  // async resetPassword(
-  //   @Body('email') email: string,
-  //   @Body('newPassword') newPassword: string,
-  // ): Promise<{ accessToken: string; userInfo: any }> {
-  //   const result = await this.authService.updatePassword(email, newPassword);
-  //   return result;
-  // }
+  @Put('reset-password')
+  async resetPassword(
+    @Body('email') email: string,
+    @Body('newPassword') newPassword: string,
+  ): Promise<{ accessToken: string; userInfo: any }> {
+    const result = await this.authService.updatePassword(email, newPassword);
+    return result;
+  }
 }
