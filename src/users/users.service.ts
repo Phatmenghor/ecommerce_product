@@ -26,6 +26,12 @@ export class UsersService {
     });
   }
 
+  async findAll(): Promise<Partial<User>[]> {
+    return this.prisma.user.findMany({
+      select: UserResponseSelect,
+    });
+  }
+
   async create(user: CreateUserDto): Promise<User> {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(user.password, salt);
