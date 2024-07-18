@@ -6,14 +6,16 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersModule } from 'src/users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
   imports: [
     UsersModule,
     PassportModule,
+    PrismaModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'phatmenghor',
-      signOptions: { expiresIn: '60m' },
+      signOptions: {},
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],

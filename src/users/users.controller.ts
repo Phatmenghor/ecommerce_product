@@ -13,11 +13,7 @@ import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from '@prisma/client';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import {
-  handleError,
-  handleSuccess,
-} from 'src/common/responses/responses.helper';
-import { UserResponse } from './dto/user-response-select.dto';
+import { handleError } from 'src/common/responses/responses.helper';
 import { NotFoundExceptionFilter } from 'src/common/filters/not-found.exception';
 
 @Controller('api/users')
@@ -33,7 +29,7 @@ export class UsersController {
       if (!user) {
         throw new NotFoundException(`User with email ${email} not found.`);
       }
-      return handleSuccess<UserResponse>(user);
+      return user;
     } catch (error) {
       return handleError(error);
     }
@@ -47,7 +43,7 @@ export class UsersController {
       if (!user) {
         throw new NotFoundException(`User with ID ${id} not found.`);
       }
-      return handleSuccess<UserResponse>(user);
+      return user;
     } catch (error) {
       return handleError(error);
     }
@@ -65,6 +61,13 @@ export class UsersController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.usersService.update(id, updateUserDto);
+    try {
+      return await this.usersService.update(id, updateUserDto);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+      throw error;
+    }
   }
 }

@@ -20,4 +20,14 @@ model User {
   role      String   @default("user")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  gender      String?
+  birthdate   DateTime?
+  address     String?
+  phoneNumber String?
+  isActive    Boolean   @default(true)
+  avatar      String?
+  username    String?
+  userID      String   @default(uuid()) @unique
+  latitude    Float?
+  longitude   Float?
 }

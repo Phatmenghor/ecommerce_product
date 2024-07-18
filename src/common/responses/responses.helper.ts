@@ -3,10 +3,10 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
-export interface SuccessResponse<T> {
+type SuccessResponse<T> = {
   response: 'success';
   data: T;
-}
+};
 
 export interface ErrorResponse {
   response: 'error';

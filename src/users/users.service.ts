@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -29,6 +29,7 @@ export class UsersService {
   async findAll(): Promise<Partial<User>[]> {
     return this.prisma.user.findMany({
       select: UserResponseSelect,
+      orderBy: { id: 'asc' },
     });
   }
 
@@ -43,14 +44,22 @@ export class UsersService {
     });
   }
 
-  async update(id: number, user: UpdateUserDto): Promise<User> {
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
     if (user.password) {
       const salt = await bcrypt.genSalt();
       user.password = await bcrypt.hash(user.password, salt);
     }
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
     return this.prisma.user.update({
       where: { id },
-      data: user,
+      data: updateUserDto,
     });
   }
 }
