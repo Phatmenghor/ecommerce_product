@@ -36,8 +36,6 @@ export class AuthService {
 
   async checkEmail(email: string): Promise<boolean> {
     const user = await this.prisma.user.findUnique({ where: { email } });
-
-    console.log('### ====user', user);
     return !!user;
   }
 

@@ -14,20 +14,27 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  role      String   @default("user")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int       @id @default(autoincrement())
+  username    String?
+  email       String    @unique
+  password    String
+  role        String    @default("user")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   gender      String?
   birthdate   DateTime?
   address     String?
   phoneNumber String?
   isActive    Boolean   @default(true)
   avatar      String?
-  username    String?
-  userID      String   @default(uuid()) @unique
+  userID      String    @unique @default(uuid())
   latitude    Float?
   longitude   Float?
+}
+
+enum PostType {
+  PHOTO
+  VIDEO
+  NOTE
+  DYNAMIC
 }
